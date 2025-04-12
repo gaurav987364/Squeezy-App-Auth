@@ -1,0 +1,86 @@
+Backend :-
+
+npm init -y
+
+npm i express cors dotenv cookie-parser date-fns bcrypt jsonwebtoken passport passport-jwt mongoose qrcode resend speakeasy uuid zod 
+
+Dev-dependencies + ts;
+
+npm i @types/bcrypt @types/dotenv @types/cors @types/cookie-parser @types/express @types/jsonwebtoken @types/mongoose @types/passport @types/passport-jwt @types/qrcode @types/speakeasy ts-node-dev typescript
+
+command to create ts.config.json => npx tsc --init 
+
+setup package.json + ts.config.json
+
+"server":"ts-node-dev --files ./src/server.ts",
+"build":"tsc && cp ./package.json ./dist",
+"start":"node dist/server.js"
+
+now modify the ts.config.json file {
+    target,es2023
+    rootDir"./src,
+    outDir:"./dist,
+    add these two things
+     "include": ["src/**/*.ts", "@types"],
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+}
+
+
+// middleware setup 
+
+asyncHandler() for controllers / routes
+errorHandler() for getting what kind of error is;
+
+// we have to setup certain things for make our work easy and have proper error and type of error handling;
+
+=> suppose many time .env file not works properly , not give the value correctly so we need a way to handle this in all senairios,
+
+so we make first the utility function getEnviouments which take two params key, defaulvalue ok based on that it gives us the value always;
+
+so using this function we setup the app.config.ts file ok
+
+// now there are many types of errors in backend terms so ham har baar sabhi ko remember or correctly nhi us kr pate to hme ek centralize chij setup krni hogi ok;
+
+first we make enum like all of the types or error occured;
+secodn we make the http.config.ts file in which we setup the statusCode for all types of errors and return HTTPSTATUS and HttpsStatusCode type so that we use these in AppError class and also in setup of errorHandler for AppError class ok;
+
+🔴now our work to setup the routes;
+
+
+//Some myths about new Schema() vs new mongoose.Schema()
+
+Both are the same ok, have same features, methods, etc.
+
+userId : mongoose.Schema.Types.ObjectId => we do this in verification code model to stablish a relation b/w code model and user model,
+
+ userId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User", // pointing to that User model
+        required:true,
+        index:true
+      } 
+
+Indexes in MongoDB are used to improve the efficiency of queries. When you set index: true for a field, Mongoose instructs MongoDB to create an index on that field. This makes searches, sorts, and other operations involving that field faster.
+
+
+code: {
+    type: String,
+    required: true,
+    unique: true,
+    default: generateUniqueCodes, // generate unique codes;
+},
+
+Mongoose Model Definition with Collection Name
+=> means jab user khud ko register karega tab usko liye  ek alag se verification code ki collection create ho jygi jisme code hoga for verify that email, or reset-password ok
+
+
+//User registered successfuly ok;
+
+//=> Login user (Here comes the main stuff):-
+
+// sabse phle hme user ke credentials ko check and verify krna hai ok,
+then hme us user ke liye using  that userid session collection create krni hai, ab jab jab user har bar login krega uske liye new session create hoge ya old wale verify hoge sayd;
+
+// ab hme based on userId and sessionID user ke liye accesstoken and refresh token create krne hai or unhe har request pe fir verify bhi krna hai 
+
+//after creating this all stuff hme tokens ko cookies me store krna hai ;
