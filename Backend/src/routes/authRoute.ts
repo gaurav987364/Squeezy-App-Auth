@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { loginUser, registerUser } from "../controllers/auth/authController";
+import {
+  loginUser,
+  registerUser,
+  verifyUserEmail,
+  forgotPassword,
+} from "../controllers/auth/authController";
 
 const authRoute = Router();
 
@@ -9,4 +14,10 @@ authRoute.post("/register", registerUser);
 //login
 authRoute.post("/login", loginUser);
 
+//verify-email
+authRoute.post("/verify/email", verifyUserEmail);
+
+//password-forgot
+authRoute.post("/password/forgot", forgotPassword);
+//password-reset
 export default authRoute;

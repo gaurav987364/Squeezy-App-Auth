@@ -1,3 +1,10 @@
+import { config } from "../../config/app.config";
+import { HTTPSSTATUS } from "../../config/http.config";
+import { sendEmail } from "../../mailers/mailer";
+import {
+  passwordResetTemplate,
+  verifyEmailTemplate,
+} from "../../mailers/templates/template";
 import SessionModel from "../../models/sessionModel";
 import UserModel from "../../models/userModel";
 import VerificationModel from "../../models/verificationCodeModel";
@@ -6,10 +13,16 @@ import { ErrorCode, VerificationTypes } from "../../utils/constants/constants";
 
 import {
   BadRequestException,
+  Httpsexception,
+  InternalServerException,
   NotFoundExeption,
 } from "../../utils/Error/ErrorTypes";
 
-import { AfterFortyFiveMinutes } from "../../utils/helper";
+import {
+  AfterFortyFiveMinutes,
+  afterOneHour,
+  threeMinutesAgo,
+} from "../../utils/helper";
 import { LoginDataProps, RegisterDataProps } from "../../utils/interface/types";
 import { refreshTokenSignOptions, signJwtToken } from "../../utils/jwt/jwt";
 
@@ -47,7 +60,15 @@ export const RegisterService = async (body: RegisterDataProps) => {
     type: VerificationTypes.EMAIL_VERIFICATION,
     expiresAt: AfterFortyFiveMinutes(),
   });
+
   //send code to user email
+  const verificationURL = `${config.APP_ORIGIN}/confirm-accout?code=${verificationCode.code}`;
+
+  //using resend
+  await sendEmail({
+    to: newUser.email,
+    ...verifyEmailTemplate(verificationURL),
+  });
 
   return {
     user: newUser,
@@ -104,5 +125,99 @@ export const LoginService = async (body: LoginDataProps) => {
     accessToken,
     refreshToken,
     user,
+  };
+};
+
+//verify-email-service
+export const VerifyUserEmailService = async (code: string) => {
+  //first we check code is valid or not
+  const isValidCode = await VerificationModel.findOne({
+    code: code,
+    type: VerificationTypes.EMAIL_VERIFICATION,
+    expiresAt: { $gt: new Date() }, // means that code expire time > new Date() , means now time ok;
+  });
+
+  // if code is not valid
+  if (!isValidCode) {
+    throw new BadRequestException("Invalid Code.");
+  }
+
+  // now that code contain the user id so we find user using that;
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    isValidCode.userId, // for that user
+    {
+      isEmailVerified: true, // update this property;
+    },
+    { new: true } //giver user after update;
+  );
+
+  // check error
+  if (!updatedUser) {
+    throw new BadRequestException(
+      "Email is Not Verified.Please try again Later.",
+      ErrorCode.VALIDATION_ERROR
+    );
+  }
+
+  // after verify code and update verify email term to user delete that code from collection
+  await isValidCode.deleteOne();
+  return {
+    user: updatedUser,
+  };
+};
+
+//forgot-password-service
+export const ForgotPasswordService = async (email: string) => {
+  //first find user rlated to that mail
+  const user = await UserModel.findOne({ email: email });
+
+  if (!user) {
+    throw new NotFoundExeption("User Not Found.");
+  }
+
+  // check mail for rate limit 2 times only in 3 minutes;
+  const timeAgo = threeMinutesAgo();
+  const maxAttempts = 2;
+
+  // find count
+  const count = await VerificationModel.countDocuments({
+    userId: user._id,
+    type: VerificationTypes.PASSWORD_RESET,
+    createdAt: { $gt: timeAgo }, //counts only documen created after this
+  });
+
+  if (count >= maxAttempts) {
+    throw new Httpsexception(
+      "Too Many Attempts, Try Again Later",
+      HTTPSSTATUS.TOO_MANY_REQUESTS,
+      ErrorCode.AUTH_TOO_MANY_ATTEMPTS
+    );
+  }
+
+  // set expires
+  const expiresAt = afterOneHour();
+
+  // now create an collection with code type password-reset
+  const validCode = await VerificationModel.create({
+    userId: user._id,
+    type: VerificationTypes.PASSWORD_RESET,
+    expiresAt, // setting to after 1 hour
+  });
+
+  // now we have to redirect user to reset-password page;
+  const resetLink = `${config.APP_ORIGIN}/reset-password?code=${validCode.code}$exp=${expiresAt.getTime()}`;
+
+  const { data, error } = await sendEmail({
+    to: user.email,
+    ...passwordResetTemplate(resetLink),
+  });
+
+  if (!data?.id) {
+    throw new InternalServerException(`${error?.name} ${error?.message}`);
+  }
+
+  return {
+    url: resetLink,
+    emailId: data.id,
   };
 };

@@ -1,7 +1,7 @@
 import { getEnviourments } from "../utils/helper";
 
 const appConfig = () => ({
-  NODE_ENV: getEnviourments("NODE_ENV", "developement"),
+  NODE_ENV: getEnviourments("NODE_ENV", "development"),
   PORT: getEnviourments("PORT", "5000"),
   APP_ORIGIN: getEnviourments("APP_ORIGIN", "https://localhost:5173"),
   BASE_PATH: getEnviourments("BASE_PATH", "/api"),
@@ -18,6 +18,12 @@ const appConfig = () => ({
     "MONGO_URI",
     "mongodb://localhost:27017/squeezy_app"
   ),
+  RESEND_API_KEY: getEnviourments(
+    "RESEND_API_KEY",
+    "re_VnZCdzL4_LVEwQZDK8XwUQanR2qyzeVBa"
+  ),
+  MAILER_SENDER: getEnviourments("MAILER_SENDER", "onboarding@gmail.com"),
 });
 
 export const config = appConfig();
+// re_VnZCdzL4_LVEwQZDK8XwUQanR2qyzeVBa

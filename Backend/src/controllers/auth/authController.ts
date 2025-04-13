@@ -1,8 +1,19 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../../middlewares/asyncHandler";
-import { loginSchema, registerSchema } from "../../validators/authValidator";
-import { LoginService, RegisterService } from "./authService";
+import {
+  emailSchema,
+  loginSchema,
+  registerSchema,
+  verificationSchema,
+} from "../../validators/authValidator";
+import {
+  ForgotPasswordService,
+  LoginService,
+  RegisterService,
+  VerifyUserEmailService,
+} from "./authService";
 import { HTTPSSTATUS } from "../../config/http.config";
+import { setAuthtenticationCookies } from "../../utils/cookies/setCookies";
 
 const registerUser = asyncHandler(
   async (req: Request, res: Response): Promise<any> => {
@@ -24,13 +35,49 @@ const loginUser = asyncHandler(
     //check for user-agent
     const userAgent = req.headers["user-agent"];
     const body = loginSchema.parse({
-      ...req.body
+      ...req.body,
+      userAgent,
     });
 
-     const {accessToken,refreshToken,user} = await LoginService(body);
+    const { accessToken, refreshToken, user } = await LoginService(body);
 
-     // set the access & refresh token to cookie
+    // set the access & refresh token to cookie
+    return setAuthtenticationCookies({
+      res,
+      accessToken,
+      refreshToken,
+    })
+      .status(HTTPSSTATUS.OK)
+      .json({
+        message: "User Logged in Successfully.",
+        user,
+      });
   }
 );
 
-export { registerUser, loginUser };
+// verify user email
+const verifyUserEmail = asyncHandler(
+  async (req: Request, res: Response): Promise<any> => {
+    const { code } = verificationSchema.parse(req.body);
+
+    await VerifyUserEmailService(code);
+
+    return res.status(HTTPSSTATUS.OK).json({
+      message: "Email Verified Successfully.",
+    });
+  }
+);
+
+//forgot-password
+const forgotPassword = asyncHandler(
+  async (req: Request, res: Response): Promise<any> => {
+    const email = emailSchema.parse(req.body.email);
+
+    await ForgotPasswordService(email);
+
+    return res.status(HTTPSSTATUS.OK).json({
+      message: "Please Check Your E-mail.",
+    });
+  }
+);
+export { registerUser, loginUser, verifyUserEmail, forgotPassword };

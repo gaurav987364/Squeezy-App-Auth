@@ -84,3 +84,65 @@ then hme us user ke liye using  that userid session collection create krni hai, 
 // ab hme based on userId and sessionID user ke liye accesstoken and refresh token create krne hai or unhe har request pe fir verify bhi krna hai 
 
 //after creating this all stuff hme tokens ko cookies me store krna hai ;
+
+we create the one seprate file which contain all things like methods for set cookies and delete cookies including types, and options for cookies.
+
+
+
+// verify-user-email:-
+
+first we get the code fromn the req.body; and also verify that code using the verificationschema ok;
+
+now firts we check code is valid; so we findOne code on the verificationModel collection ok , based on code, type, exires.
+
+Note how Here code expritaion works;
+on register user time we set the exires time for code is 45 minutes ok
+now when we find the document using that code, type and expires we simley put logic like
+
+{$gt : new Date()} => means only us documnet ko retun kro jiska time ab se 45 minutes or current time se jyada ho basicalyy;
+
+// now we have to find user using userId present in code and update the field isEamailVerifed and also doing {new : true} so updated document reflects immidiatly;
+
+after all stuff we simpley await validcode.deleteOne() clear from collection ok
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+details about cookie :-
+options:[
+  maxAge : how long the cookie should be lived (life),
+  expires: exact time when cookis is expires,
+           httpOnly: means cookie is not accessible with javascript,which is best for securty purpose, always do it,
+  secure: as we know cookie is send with every request to server, so   by enable it cookie is send only over HTTPS (secure protocol) not     over HTTP ok;
+
+  samesite: cookies are sent with cross-site request,cors, useful for preventing CSRF attacks :- types are ,
+      "strict" : cookies sent only for same site,
+      "lax": cookies sent for top level navigation (GET request),
+      "none": cookies sent for all request,
+  
+  path: defines the URL path for which the cookie is valid, eg: /admin,
+
+  domain: specify the domain for which the cookie is valid.This allow sub domain to share cookies eg: example.com,
+
+  signed: when set to true, the cookies is signed using the secret key for added integrity.This works with cookie-parser siging functionality.
+]
