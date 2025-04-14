@@ -146,3 +146,103 @@ options:[
 
   signed: when set to true, the cookies is signed using the secret key for added integrity.This works with cookie-parser siging functionality.
 ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+//@types stuff for logout
+The @types folder is typically used in a TypeScript project to define custom type declarations for third-party libraries or specific application structures. In this case, the types.d.ts file expands the default type definitions of the Express framework to include custom properties and interfaces specific to your application. Here's what this particular file does:
+
+Breakdown of the Code
+import { UserDocument } from "../models/userModel";
+import { Request } from "express";
+
+declare global {
+  namespace Express {
+    interface User extends UserDocument {}
+    interface Request {
+      sessionId?: string;
+    }
+  }
+}
+
+
+1. Global Declaration Scope
+The declare global statement allows you to augment or modify global type definitions. In this case, you're extending the Express namespace, which is a part of the Express framework's type definitions.
+
+2. Extending Express.User Interface
+interface User extends UserDocument {}
+
+
+- What It Does:- This line extends the Express.User interface to inherit from the UserDocument type.
+- UserDocument likely comes from your userModel, and it defines the shape of a user object in your database (e.g., properties like name, email, password, etc.).
+
+- Why It's Useful:- You can now use req.user (available via Passport.js or similar middleware) in your application with the properties defined in UserDocument. This improves type safety by allowing IntelliSense and compile-time checks.
+
+
+
+3. Adding sessionId to Express.Request
+interface Request {
+  sessionId?: string;
+}
+
+
+- What It Does:- This line adds the optional sessionId property to the Express.Request interface.
+- sessionId might represent the unique identifier of a user session stored in your database.
+
+- Why It's Useful:- This enables you to attach a sessionId to the request object dynamically during middleware or route handling.
+- TypeScript will recognize req.sessionId as a valid property, reducing the chance of runtime errors.
+
+
+
+Purpose of the types.d.ts File
+- Custom Typing: Extends third-party type definitions (like Express) to include application-specific types.
+- Type Safety: Ensures type safety across your application, helping you write more reliable and maintainable code.
+- Centralized Typing: Provides a central location for all custom type definitions, making it easier to manage and update them.
+
+
+Best Practices
+- Place your types.d.ts file inside an @types folder or another dedicated folder like src/types for clarity.
+- Ensure your tsconfig.json includes the @types folder in the include or typeRoots option, so TypeScript can pick up the custom types.
+
+
+With this setup, your application achieves tighter integration between Express and your data models while ensuring type safety for commonly accessed properties like req.user and req.sessionId. Let me know if you'd like further clarification or practical examples! 😄
+
+
+
+🔴🔴🔴 But Logout thing is still not done yet :- Now we have to setup the strategy from passport-jwt
+
+// we have to make one setupJwtStrategy function and one initializer function
+
+// we have to setup the user service (find user by id)
+
+//we have to setup the passport middleware by calling that function setupJwtStrategy and export default passport;
+
+// we have to import that passport into our main server.ts file; and initialize and setup it as middleware;
+
+
+secretOrKey is a string or buffer containing the secret (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's signature. REQUIRED unless secretOrKeyProvider is provided.
+secretOrKeyProvider is a callback in the format function secretOrKeyProvider(request, rawJwtToken, done), which should call done with a secret or PEM-encoded public key (asymmetric) for the given key and request combination. done accepts arguments in the format function done(err, secret). Note it is up to the implementer to decode rawJwtToken. REQUIRED unless secretOrKey is provided.
+jwtFromRequest (REQUIRED) Function that accepts a request as the only parameter and returns either the JWT as a string or null. See Extracting the JWT from the request for more details.
+issuer: If defined the token issuer (iss) will be verified against this value.
+audience: If defined, the token audience (aud) will be verified against this value.
+algorithms: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
+ignoreExpiration: if true do not validate the expiration of the token.
+passReqToCallback: If true the request will be passed to the verify callback. i.e. verify(request, jwt_payload, done_callback).
+jsonWebTokenOptions: passport-jwt is verifying the token using jsonwebtoken. Pass here an options object for any other option you can pass the jsonwebtoken verifier. (i.e maxAge)
+verify is a function with the parameters verify(jwt_payload, done)
+
+jwt_payload is an object literal containing the decoded JWT payload.
+done is a passport error first callback accepting arguments done(error, user, info)
+
+
+Use passport.authenticate() specifying 'JWT' as the strategy.

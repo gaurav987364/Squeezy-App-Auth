@@ -46,3 +46,12 @@ export const setAuthtenticationCookies = ({
     .cookie("refreshToken", refreshToken, getRefreshTokenCookiesOptions());
 };
 // means just like normally , set the cookies to user now we have to set cookies in best practice
+
+//clear cookies function
+export const clearAuthenticationCookies = (res: Response): Response => {
+  return res.clearCookie("accessToken").clearCookie("refreshToken", {
+    path: REFRESH_PATH, //read below
+  });
+};
+
+//clearing the refreshToken with a specific path (like REFESH_PATH) ensures that any path-specif token cant be reused to generate new acces token

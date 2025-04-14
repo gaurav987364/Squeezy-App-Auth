@@ -4,16 +4,23 @@ import {
   emailSchema,
   loginSchema,
   registerSchema,
+  resetPasswordSchema,
   verificationSchema,
 } from "../../validators/authValidator";
 import {
   ForgotPasswordService,
   LoginService,
+  LogoutService,
   RegisterService,
+  ResetPasswordService,
   VerifyUserEmailService,
 } from "./authService";
 import { HTTPSSTATUS } from "../../config/http.config";
-import { setAuthtenticationCookies } from "../../utils/cookies/setCookies";
+import {
+  clearAuthenticationCookies,
+  setAuthtenticationCookies,
+} from "../../utils/cookies/setCookies";
+import { NotFoundExeption } from "../../utils/Error/ErrorTypes";
 
 const registerUser = asyncHandler(
   async (req: Request, res: Response): Promise<any> => {
@@ -80,4 +87,41 @@ const forgotPassword = asyncHandler(
     });
   }
 );
-export { registerUser, loginUser, verifyUserEmail, forgotPassword };
+
+//reset-password
+const resetPassword = asyncHandler(
+  async (req: Request, res: Response): Promise<any> => {
+    const body = resetPasswordSchema.parse(req.body);
+
+    await ResetPasswordService(body);
+
+    //we have to clear all cookies so that user ka session khatam homjaye or vi logout ho jaye
+    return clearAuthenticationCookies(res).status(HTTPSSTATUS.OK).json({
+      message: "Password Reset Successfully.",
+    });
+  }
+);
+
+//logout
+const logout = asyncHandler(
+  async (req: Request, res: Response): Promise<any> => {
+    const sessionId = req.sessionId;
+
+    if (!sessionId) {
+      throw new NotFoundExeption("Session/id not found.");
+    }
+
+    await LogoutService(sessionId);
+    return clearAuthenticationCookies(res).status(HTTPSSTATUS.OK).json({
+      message: "Logged Out Successfully.",
+    });
+  }
+);
+export {
+  registerUser,
+  loginUser,
+  verifyUserEmail,
+  forgotPassword,
+  resetPassword,
+  logout,
+};

@@ -22,4 +22,9 @@ export const verificationSchema = z.object({
   code: z.string().trim().min(1).max(200),
 });
 
+export const resetPasswordSchema = z.object({
+  password: z.string().trim().min(6).max(12),
+  verificationCode: z.string().trim().min(1).max(200),
+});
+
 export const emailSchema = z.string().trim().min(6).max(100).email();

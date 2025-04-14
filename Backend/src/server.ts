@@ -8,6 +8,7 @@ import { HTTPSSTATUS } from "./config/http.config";
 import connectDB from "./database/db";
 import { errorHandler } from "./middlewares/errorHandler";
 import authRoute from "./routes/authRoute";
+import passport from "./middlewares/passport";
 
 const BASE_PATH = config.BASE_PATH;
 configDotenv();
@@ -23,6 +24,9 @@ app.use(
     credentials: true,
   })
 );
+
+//stratgey / passportjs
+app.use(passport.initialize());
 
 //connect to db
 connectDB();

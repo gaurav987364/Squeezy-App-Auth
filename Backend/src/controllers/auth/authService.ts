@@ -1,4 +1,5 @@
 import { config } from "../../config/app.config";
+import bcrypt from "bcrypt";
 import { HTTPSSTATUS } from "../../config/http.config";
 import { sendEmail } from "../../mailers/mailer";
 import {
@@ -220,4 +221,51 @@ export const ForgotPasswordService = async (email: string) => {
     url: resetLink,
     emailId: data.id,
   };
+};
+
+//reset-password-service
+export const ResetPasswordService = async (body: any) => {
+  const { password, verificationCode } = body;
+
+  //find valid code or match user code
+  const isValidCode = await VerificationModel.findOne({
+    code: verificationCode,
+    type: VerificationTypes.PASSWORD_RESET,
+    expiresAt: { $gt: new Date() },
+  });
+
+  if (!isValidCode) {
+    throw new NotFoundExeption("Invalid Code or Expired Code.");
+  }
+
+  //now hashing the user new password
+  const salt = await bcrypt.genSalt(10);
+  const hashPassword = await bcrypt.hash(password, salt);
+
+  //find user
+  const updatedUser = await UserModel.findByIdAndUpdate(isValidCode.userId, {
+    password: hashPassword,
+  });
+
+  if (!updatedUser) {
+    throw new BadRequestException("Failed to reset password.");
+  }
+
+  //delete used code from collection
+  await isValidCode.deleteOne();
+
+  //delete all active session for the user whose passsword is updated;
+  //doing this step is part of security best practice, as user update their password so he hase to login again mean we delete their all sesions;
+  await SessionModel.deleteMany({
+    userId: updatedUser._id,
+  });
+
+  return {
+    user: updatedUser,
+  };
+};
+
+//logout-service
+export const LogoutService = async (sessionId: string) => {
+  return await SessionModel.findByIdAndDelete(sessionId);
 };
