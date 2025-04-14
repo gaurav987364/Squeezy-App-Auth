@@ -6,6 +6,7 @@ import {
   forgotPassword,
   resetPassword,
   logout,
+  renewAccessToken,
 } from "../controllers/auth/authController";
 import { authenticateJWT } from "../strategies/jwt-strategy";
 
@@ -28,5 +29,8 @@ authRoute.post("/password/reset", resetPassword);
 
 //logout
 authRoute.post("/logout", authenticateJWT, logout);
+
+//refresh token to get new access token;
+authRoute.get("/refresh", renewAccessToken);
 
 export default authRoute;

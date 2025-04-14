@@ -17,15 +17,22 @@ import {
   Httpsexception,
   InternalServerException,
   NotFoundExeption,
+  UnAuthorizedexception,
 } from "../../utils/Error/ErrorTypes";
 
 import {
   AfterFortyFiveMinutes,
   afterOneHour,
+  calculateExpirationDate,
   threeMinutesAgo,
 } from "../../utils/helper";
 import { LoginDataProps, RegisterDataProps } from "../../utils/interface/types";
-import { refreshTokenSignOptions, signJwtToken } from "../../utils/jwt/jwt";
+import {
+  RefreshTokenPayload,
+  refreshTokenSignOptions,
+  signJwtToken,
+  verifyJwtToken,
+} from "../../utils/jwt/jwt";
 
 export const RegisterService = async (body: RegisterDataProps) => {
   const { name, email, password } = body;
@@ -78,7 +85,7 @@ export const RegisterService = async (body: RegisterDataProps) => {
 
 export const LoginService = async (body: LoginDataProps) => {
   const { email, password, userAgent } = body;
-  console.log(userAgent); // for our use;
+  // console.log(userAgent); // for our use;
 
   //find that user with email
   const user = await UserModel.findOne({ email });
@@ -268,4 +275,57 @@ export const ResetPasswordService = async (body: any) => {
 //logout-service
 export const LogoutService = async (sessionId: string) => {
   return await SessionModel.findByIdAndDelete(sessionId);
+};
+
+//re-new access token using refresh token
+export const RenewAccessTokenService = async (refreshToken: string) => {
+  //verify old token
+  const { payload } = verifyJwtToken<RefreshTokenPayload>(refreshToken, {
+    secret: refreshTokenSignOptions.secret,
+  });
+
+  if (!payload) {
+    throw new UnAuthorizedexception("Invalid Refresh Token.");
+  }
+
+  //find session with payload.sessionId
+  const session = await SessionModel.findById(payload.sessionId);
+
+  if (!session) {
+    throw new UnAuthorizedexception("Session Does Not Exists.");
+  }
+  //now (current date & time)
+  const now = Date.now();
+  // this code is checks for is the refresh token is valid or not or expires , if expires genertae new and set, if not require then it gives false;
+  const sessionRequireRefresh =
+    session.expiresAt.getTime() - now <= 24 * 60 * 60 * 1000; // 1 day in milliseconds
+
+  if (sessionRequireRefresh) {
+    //update the time of session
+    session.expiresAt = calculateExpirationDate(config.JWT.REFRESH_EXPIRES_IN);
+
+    // save session details
+    await session.save();
+  }
+
+  //make new refrsh token
+  const newRefreshtoken = sessionRequireRefresh
+    ? signJwtToken(
+        {
+          sessionId: session._id,
+        },
+        refreshTokenSignOptions
+      )
+    : undefined;
+
+  //new access token
+  const newAccessToken = signJwtToken({
+    userId: session.userId,
+    sessionId: session._id,
+  });
+
+  return {
+    newAccessToken,
+    newRefreshtoken,
+  };
 };

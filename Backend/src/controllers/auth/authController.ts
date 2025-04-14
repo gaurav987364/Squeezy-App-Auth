@@ -12,15 +12,21 @@ import {
   LoginService,
   LogoutService,
   RegisterService,
+  RenewAccessTokenService,
   ResetPasswordService,
   VerifyUserEmailService,
 } from "./authService";
 import { HTTPSSTATUS } from "../../config/http.config";
 import {
   clearAuthenticationCookies,
+  getAccessTokenCookiesOptions,
+  getRefreshTokenCookiesOptions,
   setAuthtenticationCookies,
 } from "../../utils/cookies/setCookies";
-import { NotFoundExeption } from "../../utils/Error/ErrorTypes";
+import {
+  NotFoundExeption,
+  UnAuthorizedexception,
+} from "../../utils/Error/ErrorTypes";
 
 const registerUser = asyncHandler(
   async (req: Request, res: Response): Promise<any> => {
@@ -117,6 +123,34 @@ const logout = asyncHandler(
     });
   }
 );
+
+//refresh-token=> renew access token again
+const renewAccessToken = asyncHandler(
+  async (req: Request, res: Response): Promise<any> => {
+    const myRefreshToken = req.cookies.refreshToken as string | undefined;
+
+    if (!myRefreshToken) {
+      throw new UnAuthorizedexception("User Not Authenticated.");
+    }
+    const { newAccessToken, newRefreshtoken } =
+      await RenewAccessTokenService(myRefreshToken);
+
+    if (newRefreshtoken) {
+      res.cookie(
+        "refreshToken",
+        newRefreshtoken,
+        getRefreshTokenCookiesOptions()
+      );
+    }
+
+    return res
+      .status(HTTPSSTATUS.OK)
+      .cookie("accessToken", newAccessToken, getAccessTokenCookiesOptions())
+      .json({
+        message: "Refresh Access-Token Successfully.",
+      });
+  }
+);
 export {
   registerUser,
   loginUser,
@@ -124,4 +158,5 @@ export {
   forgotPassword,
   resetPassword,
   logout,
+  renewAccessToken,
 };
