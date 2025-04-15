@@ -246,3 +246,19 @@ done is a passport error first callback accepting arguments done(error, user, in
 
 
 Use passport.authenticate() specifying 'JWT' as the strategy.
+
+
+
+
+// Some talks about .populate(), .select method of mongoose
+
+=> remember whne we are making the verification or session models we simpley write some thing like ref:["User"] in the userId ok;
+
+so in getting the current session using sessionId we find our session well ok, but it contains only the userId , now we have to return the full user object based on that id, we have two option here one is simpley fetch based on userid from usermodel and second one is .populate("userId") 
+
+=>- The populate method is used in Mongoose to replace a reference field (like userId) in the document with the actual - The populate method is used in Mongoose to replace a reference field (like userId) in the document with the actual - The populate method is used in Mongoose to replace a reference field (like userId) in the document with the actual 
+
+ 
+.select("expiresAt") means we exclude (not involve oor bhaar feek do) the expiresAt filed from the session object;ok
+
+

@@ -9,6 +9,8 @@ import connectDB from "./database/db";
 import { errorHandler } from "./middlewares/errorHandler";
 import authRoute from "./routes/authRoute";
 import passport from "./middlewares/passport";
+import sessionRoute from "./routes/sessionRoute";
+import { authenticateJWT } from "./strategies/jwt-strategy";
 
 const BASE_PATH = config.BASE_PATH;
 configDotenv();
@@ -42,6 +44,9 @@ app.get(
 
 //auth routes
 app.use(`${BASE_PATH}/auth`, authRoute);
+
+//session-routes (passing this authenticateJwt is compulsory otherwise we get empty arrray)
+app.use(`${config.BASE_PATH}/session`, authenticateJWT, sessionRoute);
 
 //error handler middleware
 app.use(errorHandler);
