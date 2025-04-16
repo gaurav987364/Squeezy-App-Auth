@@ -48,19 +48,22 @@ const ThemeBox = () => {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 z-50 transition-all duration-200">
+        <div className="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 z-50 transition-all duration-200">
           <ul className="py-2">
-           {themes.map(theme => (
-            <li 
-            key={theme.label} 
-            onClick={()=>handleThemeChange(theme.value)}
-            className={`w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                theme.value === mode ? "font-bold bg-gray-700" : ""
-              }`}
-            >
-                {theme.label}
-            </li>
-           ))}
+           {themes.map(theme => {
+            const Icon = theme.icon;
+            return (
+              <li 
+                key={theme.label} 
+                onClick={()=>handleThemeChange(theme.value)}
+                className={`w-full flex items-center justify-start gap-3 px-4 py-2 text-sm transition-colors duration-200 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer ${
+                    theme.value === mode ? "font-bold bg-gray-200 dark:bg-gray-700" : "font-light"
+                  }`}
+              >
+                  <Icon size={16}/> {theme.label} 
+              </li>
+             )
+           })}
           </ul>
         </div>
       )}

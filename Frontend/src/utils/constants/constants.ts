@@ -1,5 +1,7 @@
+import { FaLaptop, FaRegMoon, FaSun } from "react-icons/fa";
+
 export const themes = [
-    { value: "light", label: "Light" },
-    { value: "dark", label: "Dark" },
-    { value: "system", label: "System" },
+    { value: "light", label: "Light",icon:FaSun },
+    { value: "dark", label: "Dark",icon:FaRegMoon },
+    { value: "system", label: "System",icon:FaLaptop },
 ];

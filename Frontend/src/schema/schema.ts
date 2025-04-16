@@ -58,5 +58,39 @@ export const LoginSchema = z.object({
     .nonempty({ message: "Password is required." }),
 });
 
-export type LoginSchemaType = z.infer<typeof LoginSchema>;
+
+//forgot-password
+export const ForgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(2)
+    .max(50)
+    .email({ message: "Please enter a valid email address." })
+    .nonempty({ message: "Email is required." }),
+})
+
+//reset-password
+export const ResetPasswordSchema = z.object({
+  password: z
+  .string()
+  .trim()
+  .min(6, { message: "Password must be 6 charcters long." })
+  .max(12, { message: "Password is not more than 12 chracters." })
+  .regex(/(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/, {
+    message: "Password must include upper,lower,capital,special characters.",
+  })
+  .nonempty({ message: "Password is required." }),
+
+confirmPassword: z
+  .string()
+  .trim()
+  .min(6, { message: "Password must be 6 charcters long." })
+  .max(12, { message: "Password is not more than 12 chracters." })
+  .nonempty({ message: "Password is required." }),
+}).refine((pass) => pass.password === pass.confirmPassword);
+
 export type FormSchemaType = z.infer<typeof FormSchema>;
+export type LoginSchemaType = z.infer<typeof LoginSchema>;
+export type ForgotPasswordType = z.infer<typeof ForgotPasswordSchema>;
+export type ResetPasswordType = z.infer<typeof ResetPasswordSchema>;

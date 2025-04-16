@@ -1,11 +1,25 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import SqueezyLogo from '../../components/Logo'
 import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaFrown } from 'react-icons/fa';
+import { useForm } from 'react-hook-form';
+import { ResetPasswordSchema, ResetPasswordType } from '../../schema/schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const ResetPassword = () => {
+  const methods = useForm<ResetPasswordType>({resolver:zodResolver(ResetPasswordSchema)});
   const [isValid,setIsValid] = useState(true);
   const [isPending,setIsPending] = useState(false);
+
+  const {formState:{errors}} = methods;
+    
+  const onFormSubmit = (data:ResetPasswordType)=>{
+    console.log(data)
+    methods.reset()
+  };
+  const onFormError = (errors : unknown) => {
+    console.error("Form errors", errors);
+  };
   return (
     <main className="w-full min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
   <>
@@ -21,6 +35,7 @@ const ResetPassword = () => {
         </p>
 
         <form
+          onSubmit={methods.handleSubmit(onFormSubmit,onFormError)}
           className="flex flex-col gap-6"
         >
           <div>
@@ -34,10 +49,11 @@ const ResetPassword = () => {
               id="password"
               type="password"
               autoComplete="off"
+              {...methods.register("password")}
               placeholder="Enter your password"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              required
             />
+            {errors.password && <p className=" text-red-500 text-xs font-semibold ml-1">{errors.password.message}</p>}
           </div>
 
           <div>
@@ -51,15 +67,16 @@ const ResetPassword = () => {
               id="confirmPassword"
               type="password"
               autoComplete="off"
+              {...methods.register("confirmPassword")}
               placeholder="Re-enter your password"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              required
             />
+            {errors.confirmPassword && <p className=" text-red-500 text-xs font-semibold ml-1">{errors.confirmPassword.message}</p>}
           </div>
 
           <button
             type="submit"
-            disabled
+            // disabled
             className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-900"
           >
             {isPending ? (

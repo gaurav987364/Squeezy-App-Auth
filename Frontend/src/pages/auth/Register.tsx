@@ -1,6 +1,11 @@
 import { FormSchema, FormSchemaType } from "../../schema/schema";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useRegisterMutation } from "../../store/api/AuthAPi";
+import { setCredentials } from "../../store/slices/AuthSlice";
+import Loader from "../../components/Loader";
 
 const Register = () => {
   const methods = useForm<FormSchemaType>({resolver:zodResolver(FormSchema),defaultValues:{
@@ -11,8 +16,19 @@ const Register = () => {
   }});
   const {formState:{errors}} = methods;
 
-  const onFormSubmit = (data:FormSchemaType)=>{
-    console.log(data)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [register, {isLoading}] = useRegisterMutation();
+
+  const onFormSubmit =async (data:FormSchemaType)=>{
+    try {
+      const res = await register({...data}).unwrap();
+      dispatch(setCredentials({...res}));
+      navigate("/login")
+    } catch (error) {
+      console.error(error)
+    }
     methods.reset()
   };
   const onFormError = (errors : unknown) => {
@@ -43,7 +59,6 @@ const Register = () => {
             <input
               id="name"
               type="text"
-              required
               {...methods.register("name")}
               placeholder="John Doe"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -60,7 +75,6 @@ const Register = () => {
             <input
               id="email"
               type="email"
-              required
               {...methods.register("email")}
               placeholder="you@example.com"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -77,7 +91,6 @@ const Register = () => {
             <input
               id="password"
               type="password"
-              required
               {...methods.register("password")}
               placeholder="********"
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -94,7 +107,6 @@ const Register = () => {
             <input
               id="confirmPassword"
               type="password"
-              required
               {...methods.register("confirmPassword")}
               placeholder="********"
               className={`w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 `}
@@ -106,21 +118,22 @@ const Register = () => {
           {/* Submit */}
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-900 cursor-pointer"
             aria-label="Create account"
           >
-            Sign Up
+            {isLoading ? <Loader/> : "Sign Up"}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
           Already have an account?{" "}
-          <a
-            href="#"
+          <Link
+            to="/login"
             className="text-purple-600 dark:text-purple-400 font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             Sign in
-          </a>
+          </Link>
         </div>
       </section>
     </main>

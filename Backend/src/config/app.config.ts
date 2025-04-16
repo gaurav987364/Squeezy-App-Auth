@@ -3,7 +3,7 @@ import { getEnviourments } from "../utils/helper";
 const appConfig = () => ({
   NODE_ENV: getEnviourments("NODE_ENV", "development"),
   PORT: getEnviourments("PORT", "5000"),
-  APP_ORIGIN: getEnviourments("APP_ORIGIN", "https://localhost:5173"),
+  APP_ORIGIN: getEnviourments("APP_ORIGIN", "http://localhost:5173"),
   BASE_PATH: getEnviourments("BASE_PATH", "/api"),
   JWT: {
     SECRET: getEnviourments("JWT_SECRET", "my_jwt_secret"),

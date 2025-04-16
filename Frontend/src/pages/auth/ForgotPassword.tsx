@@ -1,13 +1,29 @@
 import { useState } from "react";
 import Logo from "../../components/Logo";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { ForgotPasswordSchema, ForgotPasswordType } from "../../schema/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const ForgotPassword = () => {
+  const methods = useForm<ForgotPasswordType>({resolver:zodResolver(ForgotPasswordSchema)});
   const [isPending, setIsPending] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+
+  const {formState:{errors}} = methods;
+    
+  const onFormSubmit = (data:ForgotPasswordType)=>{
+    console.log(data)
+    methods.reset()
+  };
+  const onFormError = (errors : unknown) => {
+    console.error("Form errors", errors);
+  };
   return (
     <main className="w-full min-h-screen flex items-center justify-center px-4 bg-white dark:bg-gray-900 transition-colors duration-300">
       {!isSubmitted ? (
-        <div className="w-full max-w-md p-6 sm:p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-md">
+        <div className="w-full max-w-md p-6 sm:p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
           {/* Logo */}
           <div className="mb-6 text-center sm:text-left">
             <Logo size="small"/>
@@ -24,7 +40,7 @@ const ForgotPassword = () => {
           </p>
 
           {/* Form */}
-          <form  className="flex flex-col gap-6">
+          <form onSubmit={methods.handleSubmit(onFormSubmit,onFormError)}  className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <label htmlFor="email" className="text-sm text-gray-700 dark:text-gray-300">
                 Email
@@ -32,10 +48,11 @@ const ForgotPassword = () => {
               <input
                 id="email"
                 type="email"
-                required
+                {...methods.register("email")}
                 placeholder="subscribeto@channel.com"
                 className="w-full h-10 px-3 py-2 rounded-md bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
+              {errors.email && <p className=" text-red-500 text-xs font-semibold ml-1">{errors.email.message}</p>}
             </div>
 
             <button
@@ -69,9 +86,9 @@ const ForgotPassword = () => {
             </span>
           </p>
           <>
-            <button className="h-[40px] px-4 text-sm bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-md flex items-center gap-1 mt-2">
+            <Link to="/login" className="h-[40px] px-4 text-sm bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-md flex items-center gap-1 mt-2">
               Go to Login
-            </button>
+            </Link>
           </>
         </div>
       )}

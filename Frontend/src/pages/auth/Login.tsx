@@ -1,6 +1,11 @@
 import { useForm } from "react-hook-form";
 import { LoginSchema, LoginSchemaType } from "../../schema/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useLoginMutation } from "../../store/api/AuthAPi";
+import { setCredentials } from "../../store/slices/AuthSlice";
+import Loader from "../../components/Loader";
 
 const Login = () => {
    const methods = useForm<LoginSchemaType>({resolver:zodResolver(LoginSchema),defaultValues:{
@@ -8,9 +13,21 @@ const Login = () => {
       password:"",
     }});
     const {formState:{errors}} = methods;
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [login,{isLoading}] = useLoginMutation();
   
-    const onFormSubmit = (data:LoginSchemaType)=>{
+    const onFormSubmit =async (data:LoginSchemaType)=>{
       console.log(data)
+      try {
+        const res = await login({...data}).unwrap();
+        dispatch(setCredentials({...res}))
+        navigate("/home");
+      } catch (error) {
+        console.error(error)
+      }
       methods.reset()
     };
     const onFormError = (errors : unknown) => {
@@ -48,7 +65,6 @@ const Login = () => {
               id="email"
               type="email"
               autoComplete="email"
-              required
               {...methods.register("email")}
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               placeholder="you@example.com"
@@ -69,7 +85,6 @@ const Login = () => {
               id="password"
               type="password"
               autoComplete="current-password"
-              required
               {...methods.register("password")}
               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               placeholder="Enter your password"
@@ -84,27 +99,27 @@ const Login = () => {
             className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-900 cursor-pointer"
             aria-label="Sign in"
           >
-            Sign In
+            {isLoading ? <Loader/> : "Sign In"}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
           Forgot your password?{" "}
-          <a
-            href="#"
+          <Link
+            to="/forgot-password"
             className="text-purple-600 dark:text-purple-400 font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             Forgot password
-          </a>
+          </Link>
         </div>
         <div className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           Don’t have an account?{" "}
-          <a
-            href="#"
+          <Link
+            to="/register"
             className="text-purple-600 dark:text-purple-400 font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             Sign up
-          </a>
+          </Link>
         </div>
       </section>
     </main>

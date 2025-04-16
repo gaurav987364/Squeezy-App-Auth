@@ -13,7 +13,7 @@ const ConfirmAccount = () => {
       <h1
         className="text-2xl tracking-tight font-bold text-gray-900 dark:text-white mb-2 text-center sm:text-left"
       >
-        Account confirmation
+        Account Confirmation
       </h1>
 
       {/* Description */}

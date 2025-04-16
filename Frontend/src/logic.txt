@@ -1,0 +1,70 @@
+Setting up a centralized Redux store.
+
+Adding RTK Query (apiSlice) for efficient API handling.
+
+Adding your own custom auth state (AuthSlice).
+
+Integrating middleware to handle RTK Query cache & subscriptions.
+
+Enabling Redux DevTools.
+
+Listening to app lifecycle for cache refetching when focus or reconnect happens.
+
+middleware
+RTK Query needs middleware to:
+
+Track API request status (loading, success, error)
+
+Cache results
+
+Reuse cache across components
+
+Handle polling and real-time updates
+
+You're extending default Redux middleware and adding .concat(apiSlice.middleware) so RTK Query can manage all that.
+
+DevTools
+Enables Redux DevTools so you can inspect all store actions and state changes.
+
+
+ setupListeners(Store.dispatch)
+This is from RTK Query and sets up automatic re-fetching when:
+
+The window regains focus
+
+The device reconnects to internet
+
+So it helps your app stay in sync with the latest server data without manual effort.
+
+
+//=>
+✅ A reusable apiSlice base
+Defines a centralized API configuration (baseQuery with a baseUrl)
+
+Used to inject endpoints modularly (like register, login, etc.)
+
+Adds support for tag-based cache invalidation
+
+✅ A separate authApi layer
+Injects auth-related endpoints (like register)
+
+Returns auto-generated React hooks (useRegisterMutation) for use in components
+
+What this does:
+fetchBaseQuery is a small wrapper over fetch (like axios but lighter)
+
+It handles:
+
+base URL
+
+headers
+
+method, body, etc.
+
+error serialization
+
+createApi sets up an empty root API slice you can inject into
+
+tagTypes will be used later for cache invalidation (refetch, invalidateTags)
+
+This file is like your "master API engine"
