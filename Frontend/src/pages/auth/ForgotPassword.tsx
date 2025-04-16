@@ -26,7 +26,7 @@ const ForgotPassword = () => {
         <div className="w-full max-w-md p-6 sm:p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
           {/* Logo */}
           <div className="mb-6 text-center sm:text-left">
-            <Logo size="small"/>
+            <Logo/>
           </div>
 
           {/* Heading */}

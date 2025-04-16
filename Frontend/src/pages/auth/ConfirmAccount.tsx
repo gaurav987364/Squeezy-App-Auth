@@ -6,7 +6,7 @@ const ConfirmAccount = () => {
     <div className="w-full max-w-md h-full p-6 sm:p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-md">
       {/* Logo */}
       <div className="text-purple-600 dark:text-purple-400 font-bold text-2xl mb-6 text-center sm:text-left">
-        <SqueezyLogo size="small"/>
+        <SqueezyLogo />
       </div>
 
       {/* Title */}

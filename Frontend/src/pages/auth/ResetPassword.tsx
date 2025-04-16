@@ -25,7 +25,7 @@ const ResetPassword = () => {
   <>
     {isValid ? (
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 sm:p-8">
-        <SqueezyLogo size='small' />
+        <SqueezyLogo  />
 
         <h1 className="text-xl tracking-[-0.16px] dark:text-white font-bold mb-1.5 mt-8 text-center sm:text-left">
           Set up a new password

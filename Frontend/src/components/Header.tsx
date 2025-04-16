@@ -34,7 +34,7 @@ const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
     //   </div>
     // </header>
     <header className="w-full bg-white dark:bg-gray-900 shadow-sm dark:shadow-md">
-    <div className="flex items-center justify-between h-[60px] px-4 border-b border-gray-200 dark:border-gray-700">
+    <div className="flex items-center justify-between h-[60px] px-7 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
@@ -43,7 +43,7 @@ const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
           <FiMenu />
         </button>
         <h1 className="text-2xl font-bold text-purple-500 dark:text-purple-400">
-          <SqueezyLogo size="small" />
+          <SqueezyLogo  />
         </h1>
       </div>
 

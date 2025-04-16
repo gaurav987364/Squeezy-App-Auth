@@ -11,7 +11,7 @@ const SideBar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
     >
       <div className="flex items-center justify-between px-4 h-[60px] border-b border-gray-200 dark:border-gray-700 md:hidden">
         <span>
-            <SqueezyLogo size="small"/>
+            <SqueezyLogo/>
         </span>
         <button onClick={onClose} className="text-xl text-gray-700 dark:text-white">
           <IoClose />
