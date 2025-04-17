@@ -2,9 +2,7 @@ import { FormSchema, FormSchemaType } from "../../schema/schema";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { useRegisterMutation } from "../../store/api/AuthAPi";
-import { setCredentials } from "../../store/slices/AuthSlice";
 import Loader from "../../components/Loader";
 
 const Register = () => {
@@ -16,7 +14,6 @@ const Register = () => {
   }});
   const {formState:{errors}} = methods;
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [register, {isLoading}] = useRegisterMutation();
@@ -24,8 +21,8 @@ const Register = () => {
   const onFormSubmit =async (data:FormSchemaType)=>{
     try {
       const res = await register({...data}).unwrap();
-      dispatch(setCredentials({...res}));
-      navigate("/login")
+      console.log(res);
+      navigate("/message")
     } catch (error) {
       console.error(error)
     }

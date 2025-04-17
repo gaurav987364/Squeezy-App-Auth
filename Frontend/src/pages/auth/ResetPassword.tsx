@@ -1,20 +1,44 @@
-import { useState } from 'react'
 import SqueezyLogo from '../../components/Logo'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { FaArrowLeft, FaFrown } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
 import { ResetPasswordSchema, ResetPasswordType } from '../../schema/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useResetPasswordMutation } from '../../store/api/AuthAPi';
+import Loader from '../../components/Loader';
 
 const ResetPassword = () => {
   const methods = useForm<ResetPasswordType>({resolver:zodResolver(ResetPasswordSchema)});
-  const [isValid,setIsValid] = useState(true);
-  const [isPending,setIsPending] = useState(false);
-
   const {formState:{errors}} = methods;
+
+  //verify link
+  const [params] = useSearchParams();
+  const code = params.get("code");
+  const expiry = Number(params.get("exp"));
+  const now = Date.now();
+
+  const isValid = code && expiry && expiry > now;
+
+  const [reset, {isLoading}] = useResetPasswordMutation();
+  const navigate = useNavigate()
     
-  const onFormSubmit = (data:ResetPasswordType)=>{
-    console.log(data)
+  const onFormSubmit =async (data:ResetPasswordType)=>{
+    if(!code){
+      navigate("/forgot-password?email=")
+      return;
+    };
+
+    const credentials = {
+      password:data.password,
+      verificationCode:code
+    }
+    try {
+      const res = await reset(credentials);
+      console.log(res) //toast here
+      navigate("/")
+    } catch (error) {
+      console.error(error)
+    }
     methods.reset()
   };
   const onFormError = (errors : unknown) => {
@@ -25,7 +49,9 @@ const ResetPassword = () => {
   <>
     {isValid ? (
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 sm:p-8">
-        <SqueezyLogo  />
+        <div className="mb-6 text-center sm:text-left text-purple-500">
+         <SqueezyLogo  />
+        </div>
 
         <h1 className="text-xl tracking-[-0.16px] dark:text-white font-bold mb-1.5 mt-8 text-center sm:text-left">
           Set up a new password
@@ -76,16 +102,10 @@ const ResetPassword = () => {
 
           <button
             type="submit"
-            // disabled
+            disabled={isLoading}
             className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-900"
           >
-            {isPending ? (
-              <span className="flex justify-center items-center gap-2">
-                Loader  Resetting...
-              </span>
-            ) : (
-              "Reset Password"
-            )}
+            {isLoading ? <Loader/> : "Reset"}
           </button>
         </form>
       </div>

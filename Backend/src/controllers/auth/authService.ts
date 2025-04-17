@@ -70,7 +70,7 @@ export const RegisterService = async (body: RegisterDataProps) => {
   });
 
   //send code to user email
-  const verificationURL = `${config.APP_ORIGIN}/confirm-accout?code=${verificationCode.code}`;
+  const verificationURL = `${config.APP_ORIGIN}/confirm-account?code=${verificationCode.code}`;
 
   //using resend
   await sendEmail({
@@ -213,7 +213,7 @@ export const ForgotPasswordService = async (email: string) => {
   });
 
   // now we have to redirect user to reset-password page;
-  const resetLink = `${config.APP_ORIGIN}/reset-password?code=${validCode.code}$exp=${expiresAt.getTime()}`;
+  const resetLink = `${config.APP_ORIGIN}/reset-password?code=${validCode.code}&exp=${expiresAt.getTime()}`;
 
   const { data, error } = await sendEmail({
     to: user.email,

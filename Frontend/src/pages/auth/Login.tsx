@@ -20,11 +20,10 @@ const Login = () => {
     const [login,{isLoading}] = useLoginMutation();
   
     const onFormSubmit =async (data:LoginSchemaType)=>{
-      console.log(data)
       try {
         const res = await login({...data}).unwrap();
         dispatch(setCredentials({...res}))
-        navigate("/home");
+        navigate("/home", {replace : true});// Ensure you're replacing the current history state
       } catch (error) {
         console.error(error)
       }

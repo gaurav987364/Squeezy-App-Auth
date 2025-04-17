@@ -4,18 +4,27 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { ForgotPasswordSchema, ForgotPasswordType } from "../../schema/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BsFillPatchCheckFill } from "react-icons/bs";
+import { useForgotPasswordMutation } from "../../store/api/AuthAPi";
+import Loader from "../../components/Loader";
 
 const ForgotPassword = () => {
   const methods = useForm<ForgotPasswordType>({resolver:zodResolver(ForgotPasswordSchema)});
-  const [isPending, setIsPending] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-
   const {formState:{errors}} = methods;
+  
+  const [forgot, {isLoading}] = useForgotPasswordMutation();
     
-  const onFormSubmit = (data:ForgotPasswordType)=>{
-    console.log(data)
-    methods.reset()
+  const onFormSubmit = async (data:ForgotPasswordType)=>{
+    try {
+      const res = await forgot(data);
+      setIsSubmitted(true);
+      console.log(res)
+    } catch (error) {
+      console.error(error)
+    }
+    console.log(data);
+    methods.reset();
   };
   const onFormError = (errors : unknown) => {
     console.error("Form errors", errors);
@@ -25,7 +34,7 @@ const ForgotPassword = () => {
       {!isSubmitted ? (
         <div className="w-full max-w-md p-6 sm:p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
           {/* Logo */}
-          <div className="mb-6 text-center sm:text-left">
+          <div className="mb-6 text-center sm:text-left text-purple-500">
             <Logo/>
           </div>
 
@@ -57,25 +66,16 @@ const ForgotPassword = () => {
 
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isLoading}
               className="w-full h-[44px] text-[15px] font-semibold bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors"
             >
-              {isPending ? (
-                <div className="flex items-center justify-center gap-2">
-                  Loader
-                  Sending...
-                </div>
-              ) : (
-                <p className=" text-md">Send Reset Details</p>
-              )}
+              {isLoading ? <Loader/> : "Send Reset Details"}
             </button>
           </form>
         </div>
       ) : (
         <div className="w-full max-w-md h-[40vh] flex flex-col gap-4 items-center justify-center bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md text-center">
-          <div className="text-purple-600 dark:text-purple-400">
-            MailCheckIcon 
-          </div>
+            <BsFillPatchCheckFill fill="greenyellow" size={30} className=" animate-bounce"/> 
           <h2 className="text-xl font-bold text-gray-900 dark:text-white capitalize">
             Check your email
           </h2>
@@ -96,4 +96,4 @@ const ForgotPassword = () => {
   )
 }
 
-export default ForgotPassword
+export default ForgotPassword;

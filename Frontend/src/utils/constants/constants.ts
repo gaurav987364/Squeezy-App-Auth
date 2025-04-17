@@ -5,3 +5,10 @@ export const themes = [
     { value: "dark", label: "Dark",icon:FaRegMoon },
     { value: "system", label: "System",icon:FaLaptop },
 ];
+
+export const mockUser = {
+    name:"John",
+    email:"abc@gmail.com",
+    isEmailVerified:true,
+    createdAt:new Date()
+}

@@ -10,4 +10,6 @@ export const apiSlice = createApi({
   baseQuery,
   tagTypes: ["Auth", "User", "Session"],
   endpoints: () => ({}),
+  refetchOnFocus:true,
+  refetchOnReconnect:true
 });

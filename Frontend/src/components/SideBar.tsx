@@ -47,7 +47,7 @@ const SideBar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
             ${isActive ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300" : "text-gray-700 dark:text-gray-300"}`
           }
         >
-          <FaLock size={22}/> Security
+          <FaLock size={22}/> Sessions
         </NavLink>
         </div>
 

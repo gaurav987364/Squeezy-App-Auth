@@ -1,6 +1,29 @@
+import { useNavigate, useSearchParams } from "react-router-dom";
 import SqueezyLogo from "../../components/Logo"
+import { useVerifyEmailMutation } from "../../store/api/AuthAPi";
+import Loader from "../../components/Loader";
+
 
 const ConfirmAccount = () => {
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const code = params.get("code");
+
+  const [verify, {isLoading}] = useVerifyEmailMutation();
+
+  const handleSubmit =async (e:{preventDefault : ()=>void})=>{
+    e.preventDefault();
+    try {
+      if(!code){
+        throw new Error("Code Not Found");
+      }
+      const res = await verify({code});
+      console.log(res) //show message in toast
+      navigate("/login")
+    } catch (error) {
+      console.error(error)
+    }
+  };
   return (
     <main className="w-full min-h-screen flex items-center justify-center px-4 bg-white dark:bg-gray-900 transition-colors duration-300">
     <div className="w-full max-w-md h-full p-6 sm:p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-md">
@@ -22,14 +45,14 @@ const ConfirmAccount = () => {
       </p>
 
       {/* Confirmation Form */}
-      <form>
+      <form onSubmit={handleSubmit}>
         <button
           type="submit"
-          disabled
+          disabled={isLoading}
           aria-disabled="true"
-          className="w-full h-[44px] text-sm font-semibold rounded-md bg-purple-400 text-white opacity-50 cursor-not-allowed"
+          className="w-full h-[44px] text-sm font-semibold rounded-md bg-purple-400 text-white opacity-50 disabled:cursor-not-allowed"
         >
-          Confirm account
+          {isLoading ? <Loader/> : "Confirm Account"}
         </button>
       </form>
 
@@ -48,4 +71,4 @@ const ConfirmAccount = () => {
   )
 }
 
-export default ConfirmAccount
+export default ConfirmAccount;
