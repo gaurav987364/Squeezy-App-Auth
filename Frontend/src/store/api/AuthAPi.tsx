@@ -80,13 +80,21 @@ export const authApi = apiSlice.injectEndpoints({
                 }
             }
         }),
-        getAllSession:builder.query<SessionResponseType, void>({
-            query:()=>({
-                url:`${AUTH_BASE_URL}/session/getall`,
-                method:"GET",
+        getAllSession: builder.query<SessionResponseType, void>({
+            query: () => ({
+              url: `${AUTH_BASE_URL}/session/getall`,
+              method: "GET",
+              credentials: "include",
             }),
-            providesTags:["Session"], //for re-fetch
-        }),
+            // Add extra error handling
+            transformErrorResponse: (response) => {
+              if (response.status === 401) {
+                return { ...response, data: { message: 'Refreshing session...' } };
+              }
+              return response;
+            },
+            providesTags: ["Session"], //re-fetch
+          }),
         deleteSession:builder.mutation({
             query:(id:string)=>({
                 url:`${AUTH_BASE_URL}/session/${id}`,
