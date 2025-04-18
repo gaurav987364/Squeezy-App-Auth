@@ -1,7 +1,9 @@
-import { useGetCurrentSessionQuery } from '../store/api/AuthAPi'
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/Store';
 
 export const useAuth = () => {
-    const { data, isLoading, isError } = useGetCurrentSessionQuery({});
-  return {data, isError, isLoading};
+   const user = useSelector((state:RootState)=> state.auth.userInfo?.user);
+
+   return { isAuthenticated:!!user , user };
 };
 

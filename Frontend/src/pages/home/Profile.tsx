@@ -1,15 +1,12 @@
 import { FaUserCircle, FaEnvelope, FaCheckCircle } from 'react-icons/fa';
 import { IoWarning } from 'react-icons/io5';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/Store';
 import { formatReadableDate, generateAvatarFromName } from '../../utils/herlper';
+import { useAuth } from '../../hooks/useAuth';
 
 const Profile = () => {
-    const user = useSelector((state:RootState)=> state.auth.userInfo?.user);
-    const {name,email,isEmailVerified,createdAt} = user || {};
-
+    const {user} = useAuth();
     //random avatar;
-    const avatar = generateAvatarFromName(name || "");
+    const avatar = generateAvatarFromName(user.name || "");
 
   return (
     <div className="w-full min-h-[calc(100vh-60px)] px-4 py-6 md:px-8 bg-gray-50 dark:bg-gray-900">
@@ -29,16 +26,16 @@ const Profile = () => {
             </div>
           )}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{name}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user?.name}</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
-              <FaEnvelope className="text-base" /> {email}
+              <FaEnvelope className="text-base" /> {user?.email}
             </p>
           </div>
         </div>
 
         {/* Verification Status */}
         <div className="flex flex-col md:flex-row md:items-center gap-3">
-          {isEmailVerified ? (
+          {user?.isEmailVerified ? (
             <span className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium">
               <FaCheckCircle className="text-lg" /> Verified Account
             </span>
@@ -54,7 +51,7 @@ const Profile = () => {
         {/* Badges / Extra Info */}
         <div className="flex flex-wrap gap-4 text-sm">
           <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full font-medium">
-            Joined: {formatReadableDate(createdAt)}
+            Joined: {formatReadableDate(user?.createdAt)}
           </span>
           <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full font-medium">
             Role: User

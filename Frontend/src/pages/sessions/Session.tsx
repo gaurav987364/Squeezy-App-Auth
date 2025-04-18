@@ -75,7 +75,7 @@ const Session = () => {
 
           <div className="mt-4">
             <h5 className="text-base font-semibold text-gray-800 dark:text-white">Other sessions</h5>
-            <ul className="w-full mt-4 space-y-3 max-h-[400px] overflow-y-auto pr-1">
+            <ul className="w-full mt-4 space-y-3 max-h-[400px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {otherSessions?.map((session: SessionType) => (
                   <li key={session._id}>
                     {isLoading ? (

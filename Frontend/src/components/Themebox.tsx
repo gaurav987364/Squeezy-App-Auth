@@ -56,8 +56,8 @@ const ThemeBox = () => {
               <li 
                 key={theme.label} 
                 onClick={()=>handleThemeChange(theme.value)}
-                className={`w-full flex items-center justify-start gap-3 px-4 py-2 text-sm transition-colors duration-200 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer ${
-                    theme.value === mode ? "font-bold bg-gray-200 dark:bg-gray-700" : "font-light"
+                className={`w-full flex items-center justify-start gap-3 px-4 py-2 text-sm transition-colors duration-200 text-gray-700 dark:text-gray-200 hover:bg-purple-100 dark:hover:bg-purple-900 cursor-pointer ${
+                    theme.value === mode ? "font-bold text-purple-700 bg-purple-100 dark:bg-purple-900" : "font-light"
                   }`}
               >
                   <Icon size={16}/> {theme.label} 

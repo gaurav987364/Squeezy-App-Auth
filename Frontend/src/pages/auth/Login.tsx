@@ -3,9 +3,10 @@ import { LoginSchema, LoginSchemaType } from "../../schema/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useLoginMutation } from "../../store/api/AuthAPi";
-import { setCredentials } from "../../store/slices/AuthSlice";
+import { useGetCurrentSessionQuery, useLoginMutation } from "../../store/api/AuthAPi";
+import { setCredentials, setSession } from "../../store/slices/AuthSlice";
 import Loader from "../../components/Loader";
+import toast from "react-hot-toast";
 
 const Login = () => {
    const methods = useForm<LoginSchemaType>({resolver:zodResolver(LoginSchema),defaultValues:{
@@ -18,14 +19,29 @@ const Login = () => {
     const navigate = useNavigate();
 
     const [login,{isLoading}] = useLoginMutation();
+
+    // Use the session query with skip: true so we can manually trigger it
+  const { data: sessionData } = useGetCurrentSessionQuery(undefined, { skip: true });
   
     const onFormSubmit =async (data:LoginSchemaType)=>{
       try {
+        // Step 1: Perform login mutation
         const res = await login({...data}).unwrap();
-        dispatch(setCredentials({...res}))
-        navigate("/home", {replace : true});// Ensure you're replacing the current history state
+    
+        // Step 3: Update Redux with the credentials
+        dispatch(setCredentials(res));
+
+        //seets the session data;
+        if(sessionData){
+          dispatch(setSession(sessionData))
+        }
+    
+        // Step 4: Redirect to the home page
+        navigate("/home");
+        toast.success(`${res.message}`);
+    
       } catch (error) {
-        console.error(error)
+        toast.error(`Login Failed ${error}`);
       }
       methods.reset()
     };

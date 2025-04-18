@@ -16,6 +16,7 @@ import {Toaster} from "react-hot-toast";
 import { AuthProvider } from './context/auth/authContext'
 import PublicRoute from './routes/PublicRoute'
 import AuthRoute from './routes/AuthRoute'
+import NotFound from './pages/404Page'
 
 const App = () => {
   return (
@@ -25,25 +26,27 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               {/* Public Routes */}
-                <Route element={<PublicRoute />}>
+              <Route element={<PublicRoute/>}>
                   <Route path="/" element={<BaseLayout />}>
-                    <Route index element={<Home />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path='/confirm-account' element={<ConfirmAccount/>}/>
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                   </Route>
-                </Route>
+              </Route>
 
                 {/* Protected Routes (Requires Authentication) */}
-                <Route element={<AuthRoute />}>
+                <Route element={<AuthRoute/>}>
                   <Route path="/" element={<AppLayout />}>
                     <Route path="/home" element={<Home />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/session" element={<Session />} />
                   </Route>
                 </Route>
+
+                {/** Catch-all routes 404 */}
+                <Route path='*' element={<NotFound/>}/>
             </Routes>
           </BrowserRouter>
         </ThemeProvider>

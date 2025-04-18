@@ -1,4 +1,5 @@
 import { AUTH_BASE_URL } from "../constants";
+import { logout, setCredentials } from "../slices/AuthSlice";
 import { apiSlice } from "./ApiSlice";
 
 //type-safety
@@ -65,8 +66,19 @@ export const authApi = apiSlice.injectEndpoints({
             query:()=>({
                 url:`${AUTH_BASE_URL}/session/`,
                 method:"GET",
+                credentials: "include",
             }),
             providesTags:["Session"], //invalidate
+            async onQueryStarted(arg, {dispatch, queryFulfilled}){
+                try {
+                    const {data} = await queryFulfilled;
+                    dispatch(setCredentials(data?.user));
+                } catch (error) {
+                    //maybe session expired
+                    console.error(error)
+                    dispatch(logout()) //from store
+                }
+            }
         }),
         getAllSession:builder.query<SessionResponseType, void>({
             query:()=>({

@@ -50,3 +50,20 @@ export const generateAvatarFromName = (name: string): Avatar => {
 export const isExpired = (timestamp: number): boolean => {
   return Date.now() > timestamp;
 };
+
+
+//check for token is valid or expire
+export const isTokenExpired = () => {
+  const expiry = localStorage.getItem("tokenExpiry");
+  if (!expiry) return true;
+  return Date.now() > parseInt(expiry);
+};
+
+// Decode the JWT token
+const parseJwt = (token: string) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};

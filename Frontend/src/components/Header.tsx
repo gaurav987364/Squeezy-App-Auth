@@ -4,15 +4,14 @@ import { MdOutlineLogout, MdOutlineAccountCircle } from "react-icons/md";
 import SqueezyLogo from "./Logo";
 import Themebox from "./Themebox";
 import { generateAvatarFromName } from "../utils/herlper";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/Store";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLogout } from "../hooks/useLogout";
 import LogoutModal from "./LogoutDialog";
+import { useAuth } from "../hooks/useAuth";
 
 const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
-  const user = useSelector((state:RootState)=> state.auth.userInfo?.user);
+  const {user} = useAuth();
 
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);

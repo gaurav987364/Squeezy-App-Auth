@@ -7,7 +7,7 @@ const appConfig = () => ({
   BASE_PATH: getEnviourments("BASE_PATH", "/api"),
   JWT: {
     SECRET: getEnviourments("JWT_SECRET", "my_jwt_secret"),
-    EXPIRES_IN: getEnviourments("JWT_EXPIRES_IN", "15m"),
+    EXPIRES_IN: getEnviourments("JWT_EXPIRES_IN", "1m"),
     REFRESH_SECRET: getEnviourments(
       "JWT_REFRESH_SECRET",
       "my_jwt_refresh_secret"
