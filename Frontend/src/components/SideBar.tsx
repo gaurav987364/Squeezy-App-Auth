@@ -7,7 +7,7 @@ import { generateAvatarFromName } from "../utils/herlper";
 
 const SideBar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const {user} = useAuth();
-  const avatar = generateAvatarFromName(user.name || "")
+  const avatar = generateAvatarFromName(user?.name || "")
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-white dark:bg-gray-800 border-r border-gray-300 dark:border-gray-700 shadow-lg transition-transform duration-300 ease-in-out

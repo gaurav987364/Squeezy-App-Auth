@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useLogout } from "../hooks/useLogout";
 import LogoutModal from "./LogoutDialog";
 import { useAuth } from "../hooks/useAuth";
+import toast from "react-hot-toast";
 
 const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const {user} = useAuth();
@@ -24,6 +25,7 @@ const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
   //logout and make modal close ok
   const doLogoutAnCloseModal = ()=>{
     handleLogout();
+    toast.success("Logout Successfully")
     setShowModal(false);
   }
 

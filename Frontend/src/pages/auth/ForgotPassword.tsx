@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { BsFillPatchCheckFill } from "react-icons/bs";
 import { useForgotPasswordMutation } from "../../store/api/AuthAPi";
 import Loader from "../../components/Loader";
+import toast from "react-hot-toast";
 
 const ForgotPassword = () => {
   const methods = useForm<ForgotPasswordType>({resolver:zodResolver(ForgotPasswordSchema)});
@@ -19,9 +20,10 @@ const ForgotPassword = () => {
     try {
       const res = await forgot(data);
       setIsSubmitted(true);
-      console.log(res)
+      toast.success(`${res?.data?.message}`);
     } catch (error) {
       console.error(error)
+      toast.error("Failed to forgot password.")
     }
     console.log(data);
     methods.reset();

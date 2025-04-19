@@ -17,6 +17,8 @@ import { AuthProvider } from './context/auth/authContext'
 import PublicRoute from './routes/PublicRoute'
 import AuthRoute from './routes/AuthRoute'
 import NotFound from './pages/404Page'
+import LandingPage from './pages/LandingPage'
+import CheckEmailPage from './components/Message'
 
 const App = () => {
   return (
@@ -28,11 +30,13 @@ const App = () => {
               {/* Public Routes */}
               <Route element={<PublicRoute/>}>
                   <Route path="/" element={<BaseLayout />}>
+                    <Route index element={<LandingPage />}/> 
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path='/confirm-account' element={<ConfirmAccount/>}/>
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path='/message' element={<CheckEmailPage/>}/>
                   </Route>
               </Route>
 

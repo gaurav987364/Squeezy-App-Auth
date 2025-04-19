@@ -2,6 +2,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import SqueezyLogo from "../../components/Logo"
 import { useVerifyEmailMutation } from "../../store/api/AuthAPi";
 import Loader from "../../components/Loader";
+import toast from "react-hot-toast";
 
 
 const ConfirmAccount = () => {
@@ -18,10 +19,11 @@ const ConfirmAccount = () => {
         throw new Error("Code Not Found");
       }
       const res = await verify({code});
-      console.log(res) //show message in toast
+      toast.success(`${res?.data?.message}`)
       navigate("/login")
     } catch (error) {
       console.error(error)
+      toast.error("Failed to verify email.")
     }
   };
   return (
@@ -50,7 +52,7 @@ const ConfirmAccount = () => {
           type="submit"
           disabled={isLoading}
           aria-disabled="true"
-          className="w-full h-[44px] text-sm font-semibold rounded-md bg-purple-400 text-white opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-[44px] text-sm font-semibold rounded-md bg-purple-500 text-white disabled:cursor-not-allowed"
         >
           {isLoading ? <Loader/> : "Confirm Account"}
         </button>

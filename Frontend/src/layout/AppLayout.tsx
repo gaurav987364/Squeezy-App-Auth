@@ -8,7 +8,7 @@ const AppLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen w-full">
+    <div className="flex flex-col min-h-screen w-full ">
       <Header onMenuClick={() => setSidebarOpen(true)} />
       <div className="flex flex-1 overflow-hidden">
         <SideBar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />

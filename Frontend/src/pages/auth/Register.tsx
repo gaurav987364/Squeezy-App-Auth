@@ -1,9 +1,10 @@
 import { FormSchema, FormSchemaType } from "../../schema/schema";
-import {useForm} from "react-hook-form";
+import { FieldErrors, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useRegisterMutation } from "../../store/api/AuthAPi";
 import Loader from "../../components/Loader";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const methods = useForm<FormSchemaType>({resolver:zodResolver(FormSchema),defaultValues:{
@@ -21,16 +22,29 @@ const Register = () => {
   const onFormSubmit =async (data:FormSchemaType)=>{
     try {
       const res = await register({...data}).unwrap();
-      console.log(res);
+      toast.success(`${res?.message}`)
       navigate("/message")
     } catch (error) {
       console.error(error)
+      toast.error("Registration failed.")
     }
     methods.reset()
   };
-  const onFormError = (errors : unknown) => {
-    console.error("Form errors", errors);
+
+  const onFormError = (errors: FieldErrors<FormSchemaType>) => {
+    // collect every message from the errors object
+    const msgs = Object.values(errors)
+      .map(err => err?.message)
+      .filter(Boolean) as string[];
+
+    if (msgs.length) {
+      // join them into one toast
+      toast.error(msgs.join("\n"));
+    } else {
+      toast.error("Please fix the errors in the form.");
+    }
   };
+
   return (
     <main className="min-h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 transition-colors duration-300">
       <section

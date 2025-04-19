@@ -2,91 +2,68 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fetchBaseQuery, createApi} from "@reduxjs/toolkit/query/react";
 import { BASE_URL } from "../constants";
-import { logout, setCredentials } from "../slices/AuthSlice";
 
 
 const rawBaseQuery = fetchBaseQuery({ 
   baseUrl: BASE_URL,
   credentials:"include", // sent cookie with every request to server
+  // prepareHeaders: (headers) => {
+  //   console.log('Sending request with headers:', headers);
+  //   return headers;
+  // },
 });
 
-let isRefreshing = false;
+// let isRefreshing = false;
+// const queue: Array<() => void> = [];
 
-// ApiSlice.ts
-let pendingRequests: (() => void)[] = [];
-
-const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
-  // Check token expiration proactively
-  const expiryTime = parseInt(localStorage.getItem('expiryTime') || '0', 10);
-  const currentTime = Date.now();
-  const buffer = 1 * 60 * 1000; // 1 minute buffer
-
-  // Proactive refresh check
-  if (!isRefreshing && expiryTime && currentTime >= expiryTime - buffer) {
-    isRefreshing = true;
-    try {
-      const refreshResult = await rawBaseQuery(
-        { url: '/api/auth/refresh', method: 'GET' },
-        api,
-        extraOptions
-      );
+// const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
+//   // Initial request
+//   let result = await rawBaseQuery(args, api, extraOptions);
+  
+//   // Handle 401 errors
+//   if (result.error?.status === 401) {
+//     if (!isRefreshing) {
+//       isRefreshing = true;
       
-      if (refreshResult.data) {
-        api.dispatch(setCredentials(refreshResult.data));
-      } else {
-        throw new Error('Token refresh failed');
-      }
-    } catch (error) {
-      api.dispatch(logout());
-      return { error: { status: 401, data: 'Session expired' } };
-    } finally {
-      isRefreshing = false;
-      pendingRequests.forEach(cb => cb());
-      pendingRequests = [];
-    }
-  }
+//       try {
+//         // Attempt token refresh
+//         const refreshResult = await rawBaseQuery(
+//           { url: '/api/auth/refresh', method: 'GET' },
+//           api,
+//           extraOptions
+//         );
 
-  // Make initial request
-  let result = await rawBaseQuery(args, api, extraOptions);
-
-  // Handle 401 errors reactively
-  if (result.error?.status === 401) {
-    if (!isRefreshing) {
-      isRefreshing = true;
-      try {
-        const refreshResult = await rawBaseQuery(
-          { url: '/api/auth/refresh', method: 'GET' },
-          api,
-          extraOptions
-        );
-
-        if (refreshResult.data) {
-          api.dispatch(setCredentials(refreshResult.data));
-          // Retry original request
-          result = await rawBaseQuery(args, api, extraOptions);
-        } else {
-          throw new Error('Token refresh failed');
-        }
-      } catch (error) {
-        api.dispatch(logout());
-        return { error: { status: 401, data: 'Session expired' } };
-      } finally {
-        isRefreshing = false;
-      }
-    } else {
-      // Queue retry for concurrent requests
-      await new Promise(resolve => {
-        pendingRequests.push(resolve as () => void);
-      });
-      result = await rawBaseQuery(args, api, extraOptions);
-    }
-  }
-
-  return result;
-};
-
+//         if (refreshResult.data) {
+//           // Update auth state with new credentials
+//           api.dispatch(setCredentials({...refreshResult}));
+          
+//           // Retry original request with new token
+//           result = await rawBaseQuery(args, api, extraOptions);
+//         } else {
+//           throw new Error('Refresh failed');
+//         }
+//       } catch (error) {
+//         // Only logout if refresh fails
+//         api.dispatch(logout());
+//       } finally {
+//         isRefreshing = false;
+//         // Process queued requests
+//         queue.forEach(cb => cb());
+//         queue.length = 0;
+//       }
+//     } else {
+//       // Queue request while refreshing
+//       await new Promise<void>((resolve) => {
+//         queue.push(() => resolve());
+//       });
+//       result = await rawBaseQuery(args, api, extraOptions);
+//     }
+//   }
+  
+//   return result;
+// };
 export const apiSlice = createApi({
-  baseQuery:baseQueryWithReauth,
+  baseQuery:rawBaseQuery,
   tagTypes: ["Auth", "User", "Session"],
   endpoints: () => ({}),
   refetchOnFocus:true,

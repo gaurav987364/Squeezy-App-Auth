@@ -3,9 +3,6 @@ import SessionItem from "./SessionItem";
 import { useDeleteSessionMutation, useGetAllSessionQuery } from "../../store/api/AuthAPi";
 import SessionItemSkeleton from "./SessionLoadingSkeltone";
 import toast from "react-hot-toast";
-import { useAuth } from "../../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 interface SessionType {
   _id: string;
@@ -16,9 +13,7 @@ interface SessionType {
 }
 
 const Session = () => {
-  const { data, isLoading, error, isError } = useGetAllSessionQuery();
-  const {isAuthenticated} = useAuth();
-  const navigate = useNavigate();
+  const { data, isLoading } = useGetAllSessionQuery();
   const sessions: SessionType[] = data?.sessions || [];
 
   const [deleteSession, { isLoading: isDeleting }] = useDeleteSessionMutation();
@@ -28,28 +23,13 @@ const Session = () => {
       await deleteSession(id).unwrap();
       toast.success("Session deleted.");
     } catch (error) {
-      toast.error(`Error deleting session: ${error}`);
+      console.error(error)
+      toast.error(`Error deleting session`);
     }
   };
 
   const currentSession = sessions.find((s) => s.isCurrent);
   const otherSessions = sessions.filter((s) => !s.isCurrent);
-
-
-  //handle api errors
-  useEffect(() => {
-    if (isError && 'status' in error && error.status !== 401) { // Skip 401 errors
-      const errMsg = (error as any)?.data?.message || 'Session load failed';
-      toast.error(errMsg);
-    }
-  }, [isError, error]);
-
-  // This will handle redirects only after auth state changes
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: location.pathname } });
-    }
-  }, [isAuthenticated, navigate]);
 
   return (
     <div className="w-full min-h-[calc(100vh-60px)] px-4 py-6 md:px-8 bg-gray-50 dark:bg-gray-900 ">

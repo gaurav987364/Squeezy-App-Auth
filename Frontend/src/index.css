@@ -4,7 +4,22 @@
     font-family: "Luckiest Guy", cursive;
     font-weight: 500;
     font-style: normal;
-  }
+}
+
+.loader-enter {
+  opacity: 0;
+}
+.loader-enter-active {
+  opacity: 1;
+  transition: opacity 300ms;
+}
+.loader-exit {
+  opacity: 1;
+}
+.loader-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
 @custom-variant dark (&:where(.dark, .dark *))
 
-  

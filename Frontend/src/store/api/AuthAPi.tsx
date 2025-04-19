@@ -93,6 +93,8 @@ export const authApi = apiSlice.injectEndpoints({
               }
               return response;
             },
+            // Force fresh request every time
+            forceRefetch: () => true,
             providesTags: ["Session"], //re-fetch
           }),
         deleteSession:builder.mutation({

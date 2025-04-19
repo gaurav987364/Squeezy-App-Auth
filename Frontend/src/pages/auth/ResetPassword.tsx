@@ -6,6 +6,7 @@ import { ResetPasswordSchema, ResetPasswordType } from '../../schema/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useResetPasswordMutation } from '../../store/api/AuthAPi';
 import Loader from '../../components/Loader';
+import toast from 'react-hot-toast';
 
 const ResetPassword = () => {
   const methods = useForm<ResetPasswordType>({resolver:zodResolver(ResetPasswordSchema)});
@@ -34,10 +35,11 @@ const ResetPassword = () => {
     }
     try {
       const res = await reset(credentials);
-      console.log(res) //toast here
+      toast.success(`${res?.data?.message}`) //toast here
       navigate("/")
     } catch (error) {
       console.error(error)
+      toast.error("Failed to reset password.")
     }
     methods.reset()
   };

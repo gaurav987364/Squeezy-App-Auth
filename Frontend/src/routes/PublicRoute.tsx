@@ -1,10 +1,17 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+// PublicRoute.tsx (updated)
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const PublicRoute = () => {
-    const { user } = useAuth();
-    return !user ? <Outlet /> : <Navigate to="/home" replace />;
-}
+  const location = useLocation();
+  const { user } = useAuth();
+
+  return !user ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/home" state={{ from: location }} replace />
+  );
+};
 
 export default PublicRoute;
 
