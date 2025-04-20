@@ -48,7 +48,7 @@ export default function LandingPage() {
             </Link>
             <Link
               to="/features"
-              className="w-full sm:w-auto px-5 py-3 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition text-center"
+              className="w-full sm:w-auto px-5 py-3 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-purple-600 hover:text-white dark:hover:bg-gray-800 transition text-center"
             >
               Learn More
             </Link>
@@ -58,7 +58,7 @@ export default function LandingPage() {
           <img
             src="/hero-logo.png"
             alt="Squeezy Dashboard Hero"
-            className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto rounded-2xl shadow-lg"
+            className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-auto rounded-2xl shadow-xl shadow-purple-300/40 dark:shadow-purple-900/40"
           />
         </div>
       </header>
@@ -92,7 +92,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-purple-50 dark:bg-gray-800 py-10 md:py-16">
+      <section className="bg-purple-100 dark:bg-gray-800 py-10 md:py-16">
         <div className="container mx-auto px-4 md:px-0 flex flex-col sm:flex-row justify-around gap-6 md:gap-12">
           <div className="text-center">
             <span className="text-3xl md:text-4xl font-bold text-purple-600 dark:text-purple-400">1.2K+</span>

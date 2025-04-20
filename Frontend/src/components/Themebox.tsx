@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { FaSun, FaMoon, FaDesktop } from "react-icons/fa";
-import { IoMdArrowDropdown } from "react-icons/io";
 import { useTheme } from "../context/theme/ThemeContext";
 import { themes } from "../utils/constants/constants";
 
@@ -36,15 +35,14 @@ const ThemeBox = () => {
     <div className="relative" ref={boxRef}>
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+        className="flex items-center gap-1 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-700 transition"
         aria-haspopup="true"
         aria-expanded={open}
         aria-label="Toggle theme"
       >
-        {mode === "dark" && <FaMoon />}
-        {mode === "light" && <FaSun />}
-        {mode === "system" && <FaDesktop />}
-        <IoMdArrowDropdown className="ml-1" />
+        {mode === "dark" && <FaMoon/>}
+        {mode === "light" && <FaSun/>}
+        {mode === "system" && <FaDesktop/>}
       </button>
 
       {open && (

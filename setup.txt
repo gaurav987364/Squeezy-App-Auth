@@ -262,3 +262,21 @@ so in getting the current session using sessionId we find our session well ok, b
 .select("expiresAt") means we exclude (not involve oor bhaar feek do) the expiresAt filed from the session object;ok
 
 
+// some important talks about axios;
+
+Interceptors => they are used to handle request,response before going to .then.catch;
+
+api.interceptors.request.use vs api.interceptors.response.use
+
+.) This runs before the request is sent.
+   Used for:
+    Adding auth tokens to headers
+    Logging requests
+    Setting common headers
+
+.) This runs after a response is received.
+   Used for:
+    Logging responses
+    Global error handling (like catching 401)
+    Retrying failed requests
+    Token refreshing

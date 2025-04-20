@@ -7,6 +7,8 @@ import { useLoginMutation } from "../../store/api/AuthAPi";
 import { setCredentials } from "../../store/slices/AuthSlice";
 import Loader from "../../components/Loader";
 import toast from "react-hot-toast";
+import { useMutation } from "@tanstack/react-query";
+import { loginMutation } from "../../api/apiFn";
 
 const Login = () => {
    const methods = useForm<LoginSchemaType>({resolver:zodResolver(LoginSchema),defaultValues:{
@@ -18,25 +20,41 @@ const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [login,{isLoading}] = useLoginMutation();
+    const [,{isLoading}] = useLoginMutation(); //get login from it
+    const {mutate:loginFn, isPending} = useMutation({
+      mutationFn:loginMutation
+    });
+
+    console.log(isPending);
 
   
-    const onFormSubmit = async (data:LoginSchemaType)=>{
-      try {
+    const onFormSubmit =async (data:LoginSchemaType)=>{
+      // try {
         // Step 1: Perform login mutation
-        const res = await login({...data}).unwrap();
+        // const res = await login({...data}).unwrap();
+        loginFn(data, {
+          onSuccess:(response)=> {
+            dispatch(setCredentials({...response.data}))
+            toast.success(`${response.data.message}`)
+            navigate("/home")
+          },
+          onError(error) {
+            console.log(error)
+            toast.error("Failed to login.")
+          },
+        })
     
         // Step 3: Update Redux with the credentials
-        dispatch(setCredentials(res));
+        // dispatch(setCredentials(res));
     
         // Step 4: Redirect to the home page
-        navigate("/home");
-        toast.success(`${res.message}`);
+        // navigate("/home");
+        // toast.success(`${res.message}`);
     
-      } catch (error) {
-        console.error(error)
-        toast.error(`Login Failed`);
-      }
+      // } catch (error) {
+      //   console.error(error)
+      //   toast.error(`Login Failed`);
+      // }
       methods.reset()
     };
     const onFormError = (errors : unknown) => {

@@ -47,7 +47,7 @@ const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
   }, []);
   return (
     <header className="w-full bg-white dark:bg-gray-900 shadow-sm dark:shadow-md">
-    <div className="flex items-center justify-between h-[60px] px-7 border-b border-gray-200 dark:border-gray-700">
+    <div className="flex items-center justify-between h-[60px] px-7 border-b border-gray-200 dark:border-gray-700 gap-0.5">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}

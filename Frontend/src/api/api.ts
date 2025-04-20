@@ -1,43 +1,39 @@
-const baseUrl = "http://localhost:5000"
+import axios from "axios";
+const baseURL = "http://localhost:5000/api"
 
-//helper to any api call with auto refresh;
-export const apiFetch = async (path : string, options:RequestInit = {})=>{
-    //always include cookies;
-    const opts = {
-        credentials: "include" as RequestCredentials,
-        headers: {
-            "Content-Type": "application/json",
-            ...(options.headers || {})
-        }
-    }
-
-    //try original request;
-    let res = await fetch(baseUrl + path, opts);
-    console.log(res);
-
-    //if 401 or "Unauthorized"
-    if(res.status === 401){
-        //try to refresh token
-        const refresh = await fetch(baseUrl+ "/api/auth/refresh",{
-            method:"GET",
-            credentials:"include",
-        });
-
-        if(refresh.ok){
-            //refresh worked -> retry original
-            res = await fetch(baseUrl+path, opts);
-        } else{
-            //refresh failed-> logout
-            window.location.href="/login";
-            throw new Error("session expired.")
-        }
-    }
-
-    if(!res.ok){
-        // throw the error body so callers can catch it
-        const errBody = await res.json();
-        throw errBody;
-    }
-    // Return JSON data on success
-  return res.json();
+const options = {
+    baseURL,
+    timeout:10000, //10sec
+    withCredentials:true
 };
+
+//normal api
+const API = axios.create(options);
+
+//refresh api
+export const APIRefresh = axios.create(options);
+APIRefresh.interceptors.response.use((response)=>response);
+
+API.interceptors.response.use(
+    (res)=>{
+        return res;
+    }, 
+    async (error)=>{
+        const {data,status} = error.response;
+
+        if(data.errorCode === "AUTH_TOKEN_NOT_FOUND" && status === 401){
+            try {
+                await APIRefresh.get("/auth/refresh");
+                return APIRefresh(error.config);
+            } catch (error) {
+                console.log(error)
+                window.location.href = '/'
+            }
+        }
+        return Promise.reject({
+            ...data
+        })
+    }
+)
+
+export default API;

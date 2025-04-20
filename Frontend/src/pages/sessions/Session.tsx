@@ -3,6 +3,8 @@ import SessionItem from "./SessionItem";
 import { useDeleteSessionMutation, useGetAllSessionQuery } from "../../store/api/AuthAPi";
 import SessionItemSkeleton from "./SessionLoadingSkeltone";
 import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
+import { sessionsQueryFn } from "../../api/apiFn";
 
 interface SessionType {
   _id: string;
@@ -13,8 +15,17 @@ interface SessionType {
 }
 
 const Session = () => {
-  const { data, isLoading } = useGetAllSessionQuery();
-  const sessions: SessionType[] = data?.sessions || [];
+  // const { data, isLoading } = useGetAllSessionQuery();
+  // const sessions: SessionType[] = data?.sessions || [];
+
+  //new code using axiox + react-query
+  const {data,isLoading} = useQuery({
+    queryKey:["session"],
+    queryFn:sessionsQueryFn,
+    staleTime:Infinity,
+    retry:1
+  });
+  const sessions = data?.sessions || [];
 
   const [deleteSession, { isLoading: isDeleting }] = useDeleteSessionMutation();
 
@@ -28,9 +39,8 @@ const Session = () => {
     }
   };
 
-  const currentSession = sessions.find((s) => s.isCurrent);
-  const otherSessions = sessions.filter((s) => !s.isCurrent);
-
+  const currentSession = sessions?.find((s) => s.isCurrent);
+  const otherSessions = sessions?.filter((s) => !s.isCurrent);
   return (
     <div className="w-full min-h-[calc(100vh-60px)] px-4 py-6 md:px-8 bg-gray-50 dark:bg-gray-900 ">
       <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 md:p-8 space-y-6">
