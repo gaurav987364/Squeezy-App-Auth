@@ -11,4 +11,4 @@ export const mockUser = {
     email:"abc@gmail.com",
     isEmailVerified:true,
     createdAt:new Date()
-}
+};

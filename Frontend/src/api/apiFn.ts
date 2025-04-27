@@ -1,6 +1,7 @@
 import API from "./api";
 
 type LoginType = {email:string, password:string};
+
 type SessionType = {
     _id: string;
     userId: string;
@@ -17,6 +18,7 @@ type SessionResponseType = {
 export const loginMutation = async (data:LoginType)=>{
    return await API.post("/auth/login", data);
 }
+
 
 export const getUserSessionQueryFn = async () => await API.get(`/session/`);
 
