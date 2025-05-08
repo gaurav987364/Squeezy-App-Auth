@@ -280,3 +280,14 @@ api.interceptors.request.use vs api.interceptors.response.use
     Global error handling (like catching 401)
     Retrying failed requests
     Token refreshing
+
+
+// Isme hame abhi 2-4 chije or seekhni hai like verify email using otp if user not clicked first time so he hase button on that we simpley make one controller function that  runs and send otp again to user;
+
+//mfa setup :{
+  1.enable mfa
+  2.setup mfa 
+  3.revoke mfa
+};
+
+//...etc things about backend
