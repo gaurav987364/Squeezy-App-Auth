@@ -18,7 +18,7 @@ interface AuthType {
 const AuthContext = createContext<AuthType | undefined>(undefined);
 
 export const AuthProvider = ({children}:{children:React.ReactNode})=>{
-    const {isError,isLoading,data} = useAuth();
+    const {isError,isLoading,data}= useAuth();
     const user = data?.data?.user;
 
     return(
